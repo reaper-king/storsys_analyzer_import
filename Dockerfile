@@ -1,13 +1,7 @@
 FROM node:18-alpine3.15
 
+COPY . . 
 
-WORKDIR /App
-
-
-COPY ./* /App/
-
-
-RUN npm i
-
+RUN npm install
 
 CMD [ "node" , "index.js" ]
