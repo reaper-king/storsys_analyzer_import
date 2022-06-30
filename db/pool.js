@@ -3,6 +3,7 @@ import pkg from 'pg';
 import fs from 'fs';
 
 var result_mapping = fs.readFileSync('./db/init_scripts/result_mapping.sql').toString();
+var analyzer_v = fs.readFileSync('./db/init_scripts/analyzer_v.sql').toString();
 var analyzer_function = fs.readFileSync('./db/init_scripts/analyzer_function.sql').toString();
 
 const { Pool } = pkg;
@@ -29,6 +30,14 @@ async function  initDB (){
           } catch (error) {
             console.log(error.message)
           }
+          
+          
+          try {
+            let anv =  await  pool.query(`${analyzer_v}`)
+            console.log(anv)
+            } catch (error) {
+              console.log(error.message)
+            }
 }
 initDB()
 
