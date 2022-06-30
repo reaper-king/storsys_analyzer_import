@@ -1,0 +1,19 @@
+version: "3"
+services:
+  etl-poll:
+    image: storsys/analyzer_loader:latest
+    container_name: analyzer_loader
+    volumes:
+      -  /share/:/share/
+      - .env:.env
+    restart: unless-stopped
+    networks:
+      - dockernet
+      - openelis-global_26144_installer_openelis-network
+
+
+networks:
+  dockernet:
+      external: true
+  openelis-global_26144_installer_openelis-network:
+      external: true
