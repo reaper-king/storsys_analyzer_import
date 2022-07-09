@@ -1,11 +1,18 @@
--- FUNCTION: clinlims.data_import(analyzer_name text , sample_id text , tests text , results text)
+-- FUNCTION: clinlims.data_import(text, text, text, text)
 
- DROP FUNCTION IF EXISTS clinlims.data_import(analyzer_name text , sample_id text , tests text , results text);
+-- DROP FUNCTION IF EXISTS clinlims.data_import(text, text, text, text);
 
-CREATE OR REPLACE FUNCTION clinlims.data_import(analyzer_name text , sample_id text , tests text , results text  )
+CREATE OR REPLACE FUNCTION clinlims.data_import(
+	analyzer_name text,
+	sample_id text,
+	tests text,
+	results text)
     RETURNS text
     LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE 
 AS $BODY$
+
 DECLARE 
 		v_first_id integer := nextval('analyzer_results_seq');
 		v_analyzer_id integer := (select distinct analyzer_id from analyzer_v where analyzer = analyzer_name );
@@ -24,8 +31,8 @@ BEGIN
 		when v_test_id is null then  
 			return 'Test : "'|| tests || '" not found for Lab Number : "'|| sample_id|| '"' ;
 			
-		when (select count(*) from analyzer_results where accession_number = sample_id ) > 0 then
-			return 'Lab Number : "'|| sample_id || '" , already exist!' ; 
+		when (select count(*) from analyzer_results where accession_number = sample_id and test_id = v_test_id ) > 0 then
+			return 'Test : "'|| tests ||'" for Lab Number : "'|| sample_id || '" , already exist!' ; 
 		
 		when  v_result is null  and v_tr_type  not in ('A','R','N') then
 			return 'No result mapping for "'|| v_org_result || '" Lab Number : "'|| sample_id || '" Test: "' || tests ||'"'; 
@@ -51,5 +58,5 @@ END;
 
 $BODY$;
 
-ALTER FUNCTION clinlims.data_import(analyzer_name text , sample_id text , tests text , results text)
+ALTER FUNCTION clinlims.data_import(text, text, text, text)
     OWNER TO clinlims;

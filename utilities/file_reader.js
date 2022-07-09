@@ -13,7 +13,7 @@ export  function listFiles(){
   
     fs.readdir(dirPath,  function(err, files){
         var filesList =   files.filter(function(e){
-    return path.extname(e).toLowerCase() === '.txt' || path.extname(e).toLowerCase() === '.csv'
+    return path.extname(e).toLowerCase() === '.xls' || path.extname(e).toLowerCase() === '.xlsx' ||path.extname(e).toLowerCase() === '.txt' || path.extname(e).toLowerCase() === '.csv'
   });
   if(filesList.length > 0){
     translateFile(filesList)

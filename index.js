@@ -8,6 +8,17 @@ let loadStatus = []
 
 export const loadResult = async  ( sample_id, test, result, filename , recCount, indexx )=> {
 
+
+        // if(result.includes('(log')){
+
+        //   return  convertExpo(result).split('IU')[0]
+        // }
+        
+        if(result.includes('(log')){
+            result =   convertExpo(result).split('IU')[0]
+        }
+        sample_id = sample_id.substring(0,20)
+
     const archiveFiles = () => { if(recCount == indexx){
 
         if(loadStatus[`${filename}`].includes('bad')){
@@ -69,3 +80,9 @@ listFiles()
     ,10000)
 
     listFiles()
+
+    function convertExpo(val) {
+
+        return val.split(' ').map(d=> {let e = Number(d) > 0 ? Number(d) : d ; return e  } ).join(' ')
+     
+     }
