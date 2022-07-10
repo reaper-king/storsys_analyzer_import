@@ -26,6 +26,7 @@ DECLARE
 							then v_org_result::text
 							else  (select distinct  result::text from analyzer_v where analyzer_id = v_analyzer_id and test_id = v_test_id and dict_entry = v_org_result  )
 							end ; 
+		v_dup_id integer := (select min(id) from analyzer_results where accession_number = sample_id );
 BEGIN 
 	case 
 		when v_test_id is null then  
@@ -43,7 +44,10 @@ BEGIN
 		insert into analyzer_results 
 				(id,analyzer_id,accession_number,test_name,result,status_id, lastupdated,read_only,duplicate_id,complete_date,test_result_type,test_id) 
 			values 
-				(v_first_id,v_analyzer_id,sample_id,tests,v_result,1,v_created, false ,null,v_created,v_tr_type,v_test_id) ;
+				(v_first_id,v_analyzer_id,sample_id,tests,v_result,1,v_created, false ,v_dup_id,v_created,v_tr_type,v_test_id) ;
+				
+		 update analyzer_results set duplicate_id = v_first_id where 
+		 id = v_dup_id;
 	
 
 	return 'ok';

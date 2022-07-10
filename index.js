@@ -15,7 +15,7 @@ export const loadResult = async  ( sample_id, test, result, filename , recCount,
         // }
         
         if(result.includes('(log')){
-            result =   convertExpo(result).split('IU')[0]
+            result =   convertExpo(result).split('IU')[0].trim()
         }
         sample_id = sample_id.substring(0,20)
 
@@ -26,6 +26,7 @@ export const loadResult = async  ( sample_id, test, result, filename , recCount,
             fs.rename(`./share/${filename}`, `./share/issue/${filename}`, function (err) {
                 if (err) throw err
                 console.log( 'File stored under issue folder : '+filename)
+                loadStatus[`${filename}`] = []
               })
 
         }
@@ -33,7 +34,8 @@ export const loadResult = async  ( sample_id, test, result, filename , recCount,
 
             fs.rename(`./share/${filename}`, `./share/archive/${filename}`, function (err) {
                 if (err) throw err
-                console.log('File stored under issue folder : '+filename)
+                console.log(`All result entries for file : "${filename}" succeeded. File stored under archive`)
+                loadStatus[`${filename}`] = []
               })
 
         }
@@ -44,11 +46,11 @@ export const loadResult = async  ( sample_id, test, result, filename , recCount,
 
     let pushData = await pool.query(`select  clinlims.data_import('${analyzer}','${sample_id}','${test}','${result}')` )
     let dataStatus = await pushData.rows[0].data_import
-    console.log(dataStatus + ' : '+filename)
+    if(dataStatus != 'ok'){console.log('error : '+dataStatus + ' : '+filename)}
     if(dataStatus == 'ok'){
         if (loadStatus[`${filename}`] == undefined){
             loadStatus[`${filename}`] = []
-            loadStatus[`${filename}`].push('bad')
+            loadStatus[`${filename}`].push('good')
             archiveFiles()
         }else {
             loadStatus[`${filename}`].push('good')
