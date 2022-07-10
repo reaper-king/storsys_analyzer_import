@@ -23,8 +23,8 @@ export const loadResult = async  ( sample_id, test, result, filename , recCount,
 
         if(loadStatus[`${filename}`].includes('bad')){
 
-            fs.rename(`./share/${filename}`, `./share/issue/${filename}`, function (err) {
-                if (err) throw err
+            fs.rename(`./share/processing/${filename}`, `./share/issue/${filename}`, function (err) {
+                if (err){ console.log(err.message)}
                 console.log( 'File stored under issue folder : '+filename)
                 loadStatus[`${filename}`] = []
               })
@@ -32,8 +32,8 @@ export const loadResult = async  ( sample_id, test, result, filename , recCount,
         }
         else{
 
-            fs.rename(`./share/${filename}`, `./share/archive/${filename}`, function (err) {
-                if (err) throw err
+            fs.rename(`./share/processing/${filename}`, `./share/archive/${filename}`, function (err) {
+                if (err){ console.log(err.message)}
                 console.log(`All result entries for file : "${filename}" succeeded. File stored under archive`)
                 loadStatus[`${filename}`] = []
               })

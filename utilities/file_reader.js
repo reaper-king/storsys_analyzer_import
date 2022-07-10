@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { xls } from './xls_reader.js';
 import { loadResult } from '../index.js';
 import path from 'path';
 
@@ -42,7 +43,12 @@ export const translateFile = (fileList) =>{
     
 
     try {
-      
+      if(file.includes('.xls')){
+          xls(file)
+
+      }
+
+
 fs.readFile(`${dirPath}/${file}`, 'ascii', (err, data) => {
   let king = {data:""}  
     if (err) {
@@ -53,6 +59,10 @@ fs.readFile(`${dirPath}/${file}`, 'ascii', (err, data) => {
         
     let recCount = (data.match(/RESULT TABLE/g) || []).length 
     if(recCount > 0 ){
+      fs.rename(`./share/${file}`, `./share/processing/${file}`, function (err) {
+          if (err){ console.log(err.message)}
+          })
+
         try {
           let datas = data.split("RESULT TABLE")
           let filtered = datas.filter(d => d.includes('Test Disclaimer'))
@@ -93,7 +103,7 @@ fs.readFile(`${dirPath}/${file}`, 'ascii', (err, data) => {
 
              } catch (error) {
                             
-            fs.rename(`./share/${file}`, `./share/errored/${file}`, function (err) {
+            fs.rename(`./share/processing/${file}`, `./share/errored/${file}`, function (err) {
               if (err) throw err
               console.log(error.message + '\nFile stored under errored folder : '+file)
             })
@@ -104,6 +114,7 @@ fs.readFile(`${dirPath}/${file}`, 'ascii', (err, data) => {
   }
 
   });
+
     } catch (error) {
       
             fs.rename(`./share/${file}`, `./share/errored/${file}`, function (err) {
