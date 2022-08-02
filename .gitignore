@@ -1,3 +1,8 @@
 .env
 storsys_analyzer_loader.tar.gz
 node_modules
+*.tar.gz
+*.xls*
+test.json
+*.P01
+*.csv

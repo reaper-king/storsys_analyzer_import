@@ -26,7 +26,7 @@ async function  initDB (){
           
           try {
           let remap =  await  pool.query(`${result_mapping}`)
-          console.log(remap)
+          // console.log(remap)
           } catch (error) {
             console.log(error.message)
           }
@@ -34,7 +34,7 @@ async function  initDB (){
           
           try {
             let anv =  await  pool.query(`${analyzer_v}`)
-            console.log(anv)
+            // console.log(anv)
             } catch (error) {
               console.log(error.message)
             }

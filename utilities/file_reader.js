@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { xls } from './xls_reader.js';
 import { loadResult } from '../index.js';
+import { abottFileImport } from './abott.js';
 import path from 'path';
 
 var dirPath = path.resolve('./share/'); // path to your directory goes here
@@ -14,7 +15,7 @@ export  function listFiles(){
   
     fs.readdir(dirPath,  function(err, files){
         var filesList =   files.filter(function(e){
-    return path.extname(e).toLowerCase() === '.xls' || path.extname(e).toLowerCase() === '.xlsx' ||path.extname(e).toLowerCase() === '.txt' || path.extname(e).toLowerCase() === '.csv'
+    return path.extname(e).toLowerCase() === '.p01' ||path.extname(e).toLowerCase() === '.xls' || path.extname(e).toLowerCase() === '.xlsx' ||path.extname(e).toLowerCase() === '.txt' || path.extname(e).toLowerCase() === '.csv'
   });
   if(filesList.length > 0){
     translateFile(filesList)
@@ -47,8 +48,13 @@ export const translateFile = (fileList) =>{
           xls(file)
 
       }
+      
+     else  if(file.includes('.P01')){
+        abottFileImport(file)
 
-
+    }
+else
+{
 fs.readFile(`${dirPath}/${file}`, 'ascii', (err, data) => {
   let king = {data:""}  
     if (err) {
@@ -69,25 +75,25 @@ fs.readFile(`${dirPath}/${file}`, 'ascii', (err, data) => {
     
     
           let filtered2 = [ filtered.map(d=>{
-          return ( '{'+ d.substring(
-              1, 
-              d.lastIndexOf("Test Disclaimer"))
-                        .replace(/"/g,'')
-                        .replace(/Notes\r\n/g,`Notesxx\r\n`)
-                        .replace(/\nSample Type\r/g,'\nSample Typexx\r')
-                        // .replace(/\nSample Type/g,'')
-                        .replace(/,/g,'" : "')
-                        .replace(/\r/g,'"')
-                        .replace(/""/g,'')
-                        .replace(/\n/g,'\n"')
-                        .replace(/"Assay"/g,'"Test Name"')
-                        .replace(/"Notesxx"/g,'"Notes" : ""')
-                        .replace(/"Sample Typexx"/g,'"Sample Type" : ""')
-                        .substring(1)
-                        .slice(0,-2)
-                        .split('\n')
-                       +'}' )
-            })]
+            return ( '{'+ d.substring(
+                1, 
+                d.lastIndexOf("Test Disclaimer"))
+                .replace(/"/g,'')
+                .replace('Sample ID,','"Sample ID":"')
+                .replace('Patient ID,','"Patient ID":"')
+                .replace('Assay,','"Test Name":"')
+                .replace('Assay Version,','"Assay Version":"')
+                .replace('Assay Type,','"Assay Type":"')
+                .replace('Test Type,','"Test Type":"')
+                .replace('Sample Type,','"Sample Type":"')
+                .replace('Sample Type\r','"Sample Type":"\r')
+                .replace('Notes,','"Notes":"')
+                .replace('Notes\r','"Notes":"\r')
+                .replace('Test Result,','"Test Result":"')
+                .replace(/\r/g,'",')
+                .slice(0,-2)
+                         +'}' )
+             })]
 
             
        let Jsoned =   JSON.parse('['+(filtered2)+']')
@@ -113,8 +119,8 @@ fs.readFile(`${dirPath}/${file}`, 'ascii', (err, data) => {
 
   }
 
-  });
-
+  } );
+}
     } catch (error) {
       
             fs.rename(`./share/${file}`, `./share/errored/${file}`, function (err) {

@@ -8,19 +8,18 @@ let loadStatus = []
 
 export const loadResult = async  ( sample_id, test, result, filename , recCount, indexx )=> {
 
-
         // if(result.includes('(log')){
 
         //   return  convertExpo(result).split('IU')[0]
         // }
         
-        if(result.includes('(log')){
-            result =   convertExpo(result).split('IU')[0].trim()
+        if(String(result).includes('(log')){
+            result =   convertExpo(String(result)).split('IU')[0].trim()
         }
         sample_id = sample_id.substring(0,20)
 
     const archiveFiles = () => { if(recCount == indexx){
-
+        console.log(loadStatus[`${filename}`])
         if(loadStatus[`${filename}`].includes('bad')){
 
             fs.rename(`./share/processing/${filename}`, `./share/issue/${filename}`, function (err) {
@@ -46,7 +45,7 @@ export const loadResult = async  ( sample_id, test, result, filename , recCount,
 
     let pushData = await pool.query(`select  clinlims.data_import('${analyzer}','${sample_id}','${test}','${result}')` )
     let dataStatus = await pushData.rows[0].data_import
-    if(dataStatus != 'ok'){console.log('error : '+dataStatus + ' : '+filename)}
+    // if(dataStatus != 'ok'){}
     if(dataStatus == 'ok'){
         if (loadStatus[`${filename}`] == undefined){
             loadStatus[`${filename}`] = []
@@ -61,9 +60,11 @@ export const loadResult = async  ( sample_id, test, result, filename , recCount,
         if (loadStatus[`${filename}`] == undefined){
             loadStatus[`${filename}`] = []
             loadStatus[`${filename}`].push('bad')
+            console.log('error : '+dataStatus + ' : '+filename)
             archiveFiles()
         }else {
             loadStatus[`${filename}`].push('bad')
+            console.log('error : '+dataStatus + ' : '+filename)
             archiveFiles()
         }
     }
@@ -77,11 +78,12 @@ setInterval(
    ()=>{
 
 listFiles()
+
 }
     
-    ,10000)
+    ,20000)
 
-    listFiles()
+listFiles()
 
     function convertExpo(val) {
 

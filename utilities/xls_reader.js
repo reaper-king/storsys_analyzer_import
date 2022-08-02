@@ -18,7 +18,7 @@ return { labno: dt['Sample ID'],test : dt['Assay Name'],test : dt['Assay Name'],
 
 
 xlData.forEach( (d,indx)=>{
- loadResult(d.labno,d.test,d.result,file,xlData.length,indx+1)
+ loadResult(d.labno,d.test,d.result_value,file,xlData.length,indx+1)
    
 })}
 }
